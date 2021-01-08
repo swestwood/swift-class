@@ -1,2 +1,3 @@
-# swift-class
-CS193P
+# Swift class
+
+https://cs193p.sites.stanford.edu/

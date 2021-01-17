@@ -9,22 +9,41 @@ import SwiftUI
 struct EmojiMemoryGameView: View {
     
     @ObservedObject var viewModel: EmojiMemoryGame
+
+    let textPadding: CGFloat = 20
     
     var body: some View {
-        Grid(items: viewModel.cards) { card in
-            CardView(card: card).onTapGesture {
-                viewModel.choose(card: card)
+        VStack {
+            HStack {
+                Button(action: viewModel.newGame) {
+                    Text("New Game")
+                }
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .padding(.horizontal, textPadding)
+                .padding(.top, 20)
             }
-            .padding(5)
+            Grid(items: viewModel.cards) { card in
+                CardView(card: card, color: viewModel.cardColor).onTapGesture {
+                    viewModel.choose(card: card)
+                }
+                .padding(5)
+            }
+                .padding()
+            HStack {
+                Text("Theme: \(viewModel.themeName)")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Text("Score: \(viewModel.score)")
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+            }
+                .padding(.horizontal, textPadding)
         }
-            .padding()
-            .foregroundColor(Color.orange)
     }
 }
 
 struct CardView: View {
 
     var card: MemoryGame<String>.Card
+    var color: Color
     
     var body: some View {
         GeometryReader { geometry in
@@ -39,7 +58,16 @@ struct CardView: View {
                 RoundedRectangle(cornerRadius: cornerRadius).stroke(lineWidth: edgeLineWidth)
                 Text(card.content)
             } else {
-                RoundedRectangle(cornerRadius: cornerRadius).fill()
+                if !card.isMatched {
+                    RoundedRectangle(cornerRadius: cornerRadius).fill(
+                        LinearGradient(
+                            gradient: .init(colors: [color, Color.red ]),
+                              startPoint: .init(x: 0.5, y: 0),
+                              endPoint: .init(x: 0.5, y: 0.6)
+                            )
+                    )
+                }
+                // otherwise will make an empty view
             }
         }.font(Font.system(size: fontSize(for: size)))
     }
